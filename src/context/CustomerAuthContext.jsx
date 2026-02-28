@@ -41,8 +41,7 @@ export const AuthProvider = ({ children }) => {
         email,
         password,
       });
-
-      if (response.data?.success) {
+      if (response.data?.status === "success"){
         const { customer: customerData, token } = response.data.data;
         
         setCustomer(customerData);

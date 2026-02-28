@@ -38,9 +38,14 @@ const LoginPage = () => {
     }
 
     setLoading(true);
+    console.log('Attempting login with:', formData); // Debugging
 
     const result = await login(formData.email, formData.password);
 
+    // setTimeout(() => {
+    //     console.log('Login result:', result); // Debugging
+    // }, 3500); // Simulate loading time
+    
     if (result.success) {
       navigate(from, { replace: true });
     } else {
