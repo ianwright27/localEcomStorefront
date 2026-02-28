@@ -12,7 +12,7 @@ const businessConfig = {
   // Business Identity
   business: {
     id: 1, // Business ID from database
-    name: 'WrightCommerce Demo Store',
+    name: 'WrightCommerce Store',
     slug: 'wrightcommerce-demo',
     tagline: 'Quality Products, Swift Delivery',
     description: 'Your trusted online store for premium products across East Africa.',

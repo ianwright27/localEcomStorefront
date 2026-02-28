@@ -13,16 +13,24 @@ import {
   FiUser,
   FiPhone,
   FiMail,
+  FiLogOut,
 } from 'react-icons/fi';
 import businessConfig from '../../config/businessConfig';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/CustomerAuthContext';
 
 const StorefrontLayout = ({ children }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { cart } = useCart();
+  const { customer, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   const navigation = [
     { name: 'Home', path: '/' },
@@ -90,6 +98,34 @@ const StorefrontLayout = ({ children }) => {
                 <FiSearch size={20} />
               </button>
 
+              {/* User Menu */}
+              {isAuthenticated ? (
+                <div className="hidden md:flex items-center space-x-2">
+                  <Link
+                    to="/account"
+                    className="flex items-center text-gray-700 hover:text-brand-accent transition-colors"
+                  >
+                    <FiUser size={20} className="mr-1" />
+                    <span className="text-sm">{customer?.name?.split(' ')[0]}</span>
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="text-gray-700 hover:text-red-600 transition-colors"
+                    title="Logout"
+                  >
+                    <FiLogOut size={20} />
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  to="/login"
+                  className="hidden md:flex items-center text-gray-700 hover:text-brand-accent transition-colors"
+                >
+                  <FiUser size={20} className="mr-1" />
+                  <span className="text-sm">Login</span>
+                </Link>
+              )}
+
               {/* Cart */}
               <Link
                 to="/cart"
@@ -128,6 +164,50 @@ const StorefrontLayout = ({ children }) => {
                   {item.name}
                 </Link>
               ))}
+              
+              {/* Mobile Auth Links */}
+              <div className="pt-3 border-t border-gray-200">
+                {isAuthenticated ? (
+                  <>
+                    <Link
+                      to="/account"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center text-gray-700 hover:text-brand-accent py-2 font-medium"
+                    >
+                      <FiUser className="mr-2" size={18} />
+                      My Account
+                    </Link>
+                    <button
+                      onClick={() => {
+                        handleLogout();
+                        setMobileMenuOpen(false);
+                      }}
+                      className="flex items-center text-red-600 hover:text-red-800 py-2 font-medium w-full text-left"
+                    >
+                      <FiLogOut className="mr-2" size={18} />
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      to="/login"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center text-gray-700 hover:text-brand-accent py-2 font-medium"
+                    >
+                      <FiUser className="mr-2" size={18} />
+                      Login
+                    </Link>
+                    <Link
+                      to="/register"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center text-brand-accent hover:text-brand-primary py-2 font-medium"
+                    >
+                      Create Account
+                    </Link>
+                  </>
+                )}
+              </div>
             </nav>
           </div>
         )}

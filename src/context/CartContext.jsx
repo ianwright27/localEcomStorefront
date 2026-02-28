@@ -1,10 +1,9 @@
 /**
- * Cart Context
- * Manages cart state with localStorage persistence
+ * CartContext - MINIMAL TEST VERSION (NO TOAST)
+ * Use this to isolate if toast is the problem
  */
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
 
 const CartContext = createContext();
 
@@ -18,50 +17,40 @@ export const useCart = () => {
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState(() => {
-    // Initialize from localStorage
     const saved = localStorage.getItem('wrightcommerce_cart');
     return saved ? JSON.parse(saved) : [];
   });
 
-  // Save to localStorage whenever cart changes
   useEffect(() => {
     localStorage.setItem('wrightcommerce_cart', JSON.stringify(cart));
   }, [cart]);
 
-  // Add item to cart
   const addToCart = (product, quantity = 1) => {
+    console.log('addToCart called:', product.name);
+    
     setCart((prev) => {
       const existing = prev.find((item) => item.id === product.id);
       
       if (existing) {
-        // Update quantity
-        toast.success(`Updated ${product.name} quantity in cart`);
         return prev.map((item) =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       } else {
-        // Add new item
-        toast.success(`${product.name} added to cart!`);
         return [...prev, { ...product, quantity }];
       }
     });
   };
 
-  // Remove item from cart
   const removeFromCart = (productId) => {
-    setCart((prev) => {
-      const item = prev.find((i) => i.id === productId);
-      if (item) {
-        toast.info(`${item.name} removed from cart`);
-      }
-      return prev.filter((item) => item.id !== productId);
-    });
+    console.log('removeFromCart called:', productId);
+    setCart((prev) => prev.filter((item) => item.id !== productId));
   };
 
-  // Update item quantity
   const updateQuantity = (productId, quantity) => {
+    console.log('updateQuantity called:', productId, quantity);
+    
     if (quantity <= 0) {
       removeFromCart(productId);
       return;
@@ -74,15 +63,13 @@ export const CartProvider = ({ children }) => {
     );
   };
 
-  // Clear entire cart
   const clearCart = () => {
+    console.log('clearCart called');
     setCart([]);
-    toast.info('Cart cleared');
   };
 
-  // Get cart totals
   const getCartTotal = () => {
-    return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    return cart.reduce((sum, item) => sum + parseFloat(item.price) * item.quantity, 0);
   };
 
   const getCartCount = () => {
