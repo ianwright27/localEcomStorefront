@@ -1,18 +1,13 @@
 /**
- * Storefront App - WITH CUSTOMER AUTH
- * Includes AuthProvider wrapper and login/register routes
+ * Storefront App - Main Router
  */
 
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-// Contexts
-import { AuthProvider } from './context/CustomerAuthContext';
 import { CartProvider } from './context/CartContext';
-
-// Layout
+import { AuthProvider } from './context/CustomerAuthContext';
 import StorefrontLayout from './components/layout/StorefrontLayout';
 
 // Pages
@@ -24,6 +19,7 @@ import CheckoutPage from './pages/CheckoutPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
+import AccountPage from './pages/AccountPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 
@@ -34,24 +30,23 @@ function App() {
         <CartProvider>
           <StorefrontLayout>
             <Routes>
-              {/* Public Routes */}
               <Route path="/" element={<LandingPage />} />
               <Route path="/shop" element={<ShopPage />} />
               <Route path="/product/:id" element={<ProductDetails />} />
+              <Route path="/cart" element={<CartPage />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/contact" element={<ContactPage />} />
-              
+              <Route path="/payment/success" element={<PaymentSuccessPage />} />
+
               {/* Auth Routes */}
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
-              
-              {/* Cart & Checkout */}
-              <Route path="/cart" element={<CartPage />} />
-              <Route path="/checkout" element={<CheckoutPage />} />
-              
-              {/* Payment */}
-              <Route path="/payment/success" element={<PaymentSuccessPage />} />
-              
+
+              {/* Account Routes (Protected) */}
+              <Route path="/account" element={<AccountPage />} />
+              <Route path="/order/:id" element={<AccountPage />} />
+
               {/* 404 */}
               <Route path="*" element={
                 <div className="container mx-auto px-4 py-16 text-center">
@@ -61,7 +56,7 @@ function App() {
               } />
             </Routes>
           </StorefrontLayout>
-          
+
           {/* Toast Notifications */}
           <ToastContainer />
         </CartProvider>

@@ -1,5 +1,5 @@
 /**
- * Customer Auth Context
+ * Customer Auth Context - NO TOAST
  * Handles customer login, registration, and session management
  */
 
@@ -22,41 +22,35 @@ export const AuthProvider = ({ children }) => {
 
   // Initialize auth state from localStorage
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('customer');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        // Only restore session if token is present
-        if (parsed?.token) {
-          setCustomer(parsed);
-        } else {
-          localStorage.removeItem('customer');
-        }
-      }
-    } catch (e) {
-      localStorage.removeItem('customer');
+    const savedCustomer = localStorage.getItem('customer');
+    const savedToken = localStorage.getItem('customerToken');
+    
+    if (savedCustomer && savedToken) {
+      setCustomer(JSON.parse(savedCustomer));
+      // Set token in API headers
+      api.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
     }
+    
     setLoading(false);
   }, []);
-
-  /**
-   * Save customer (with token embedded) to state + localStorage.
-   * The api.js request interceptor reads customer.token automatically.
-   */
-  const persistCustomer = (customerData, token) => {
-    const payload = { ...customerData, token };
-    setCustomer(payload);
-    localStorage.setItem('customer', JSON.stringify(payload));
-  };
 
   // Login
   const login = async (email, password) => {
     try {
-      const response = await api.post('/api/v1/customers/login', { email, password });
-
-      if (response.data?.status === 'success') {
+      const response = await api.post('/api/v1/customers/login', {
+        email,
+        password,
+      });
+      if (response.data?.status === "success"){
         const { customer: customerData, token } = response.data.data;
-        persistCustomer(customerData, token);
+        
+        setCustomer(customerData);
+        localStorage.setItem('customer', JSON.stringify(customerData));
+        localStorage.setItem('customerToken', token);
+        
+        // Set token in API headers
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        
         return { success: true };
       } else {
         throw new Error(response.data?.message || 'Login failed');
@@ -80,9 +74,16 @@ export const AuthProvider = ({ children }) => {
         password,
       });
 
-      if (response.data?.status === 'success') {
+      if (response.data?.success) {
         const { customer: customerData, token } = response.data.data;
-        persistCustomer(customerData, token);
+        
+        setCustomer(customerData);
+        localStorage.setItem('customer', JSON.stringify(customerData));
+        localStorage.setItem('customerToken', token);
+        
+        // Set token in API headers
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        
         return { success: true };
       } else {
         throw new Error(response.data?.message || 'Registration failed');
@@ -100,6 +101,8 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setCustomer(null);
     localStorage.removeItem('customer');
+    localStorage.removeItem('customerToken');
+    delete api.defaults.headers.common['Authorization'];
   };
 
   // Update customer profile
@@ -107,9 +110,10 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await api.put('/api/v1/customers/profile', updates);
 
-      if (response.data?.status === 'success') {
-        // Preserve the existing token when updating profile data
-        persistCustomer(response.data.data, customer.token);
+      if (response.data?.success) {
+        const updatedCustomer = response.data.data;
+        setCustomer(updatedCustomer);
+        localStorage.setItem('customer', JSON.stringify(updatedCustomer));
         return { success: true };
       } else {
         throw new Error(response.data?.message || 'Update failed');
