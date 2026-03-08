@@ -33,13 +33,15 @@ const PaymentSuccessPage = () => {
       
       if (response.data?.success) {
         setPaymentVerified(true);
-        toast.success('Payment verified successfully!');
+        // toast.success('Payment verified successfully!');
+        console.log('Payment verified:', response.data);
       } else {
-        toast.error('Payment verification failed');
+        // toast.error('Payment verification failed');
+        console.error('Payment verification failed:', response.data);
       }
     } catch (error) {
       console.error('Payment verification error:', error);
-      toast.error('Failed to verify payment');
+      // toast.error('Failed to verify payment');
     } finally {
       setVerifying(false);
     }
@@ -63,6 +65,7 @@ const PaymentSuccessPage = () => {
           {/* Success Icon */}
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <FiCheckCircle className="text-green-600" size={48} />
+            {/* <span className="text-green-600 text-5xl">✓</span> */}
           </div>
 
           {/* Success Message */}

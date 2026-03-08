@@ -22,6 +22,7 @@ import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import AccountPage from './pages/AccountPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import OrderViewPage from './pages/OrderViewPage';
 
 function App() {
   return (
@@ -45,7 +46,7 @@ function App() {
 
               {/* Account Routes (Protected) */}
               <Route path="/account" element={<AccountPage />} />
-              <Route path="/order/:id" element={<AccountPage />} />
+              <Route path="/order/:id" element={<OrderViewPage />} />
 
               {/* 404 */}
               <Route path="*" element={

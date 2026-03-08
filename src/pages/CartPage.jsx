@@ -13,10 +13,12 @@ import {
   FiArrowRight,
 } from 'react-icons/fi';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/CustomerAuthContext';
 
 const CartPage = () => {
   const navigate = useNavigate();
   const { cart, updateQuantity, removeFromCart, getCartTotal, clearCart } = useCart();
+  const { isAuthenticated } = useAuth();
 
   // Safe quantity update handler
   const handleQuantityChange = (productId, newQuantity) => {
@@ -46,6 +48,10 @@ const CartPage = () => {
   };
 
   const handleCheckout = () => {
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: { pathname: '/checkout' } } });
+      return;
+    }
     navigate('/checkout');
   };
 
